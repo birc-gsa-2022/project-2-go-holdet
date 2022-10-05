@@ -4,17 +4,17 @@ import (
 	"fmt"
 )
 
-//global variable storing the string used to build suffix tree
+// global variable storing the string used to build suffix tree
 var x string
 
-//tree structure
+// tree structure
 type Node struct {
 	children   map[rune]*Node
 	startIndex int
 	endIndex   int
 }
 
-//should take root as first parameter, string to search for as second param.
+// should take root as first parameter, string to search for as second param.
 func search(v *Node, y string) (*Node, int) {
 	l := 0
 
@@ -33,7 +33,7 @@ func search(v *Node, y string) (*Node, int) {
 	return v, edgeLength(v)
 }
 
-//return how many chars we match
+// return how many chars we match
 func suffix(v *Node, y_part string) int {
 	suffix := x[v.startIndex:v.endIndex]
 
@@ -51,28 +51,26 @@ func suffix(v *Node, y_part string) int {
 }
 
 func buildSuffixTree(x string) *Node {
-	root := insertNode(0, 0, nil)
+	root := newNode(0, 0, nil)
 
 	for i := range x {
-		v, val := search(&root, x[i:])
+		v, val := search(root, x[i:])
 		if val == edgeLength(v) {
-			insertNode(v.endIndex, len(x), v)
+			newNode(v.endIndex, len(x), v)
 		}
 	}
-	return &root
+	return root
 }
 
 func edgeLength(node *Node) int {
 	return node.endIndex - node.startIndex
 }
 
-func insertNode(startIndex int, endIndex int, parent *Node) Node {
-	node := new(Node)
-	node.endIndex = endIndex
-	node.startIndex = startIndex
+func newNode(startIndex int, endIndex int, parent *Node) *Node {
+	node := Node{startIndex: startIndex, endIndex: endIndex}
 	node.children = make(map[rune]*Node)
-	parent.children[rune(x[startIndex])] = node
-	return *node
+	parent.children[rune(x[startIndex])] = &node
+	return &node
 }
 
 func splitEdge(parent *Node, child *Node, splitIndex int, mismatch rune) {
@@ -82,13 +80,13 @@ func splitEdge(parent *Node, child *Node, splitIndex int, mismatch rune) {
 		delete(parent.children, k)
 	}
 
-	new_internal := insertNode(parent.endIndex, splitIndex, parent)
-	new_leaf := insertNode(splitIndex, len(x), &new_internal)
+	new_internal := newNode(parent.endIndex, splitIndex, parent)
+	new_leaf := newNode(splitIndex, len(x), new_internal)
 
-	parent.children[rune(splitIndex)+rune(parent.startIndex)] = &new_internal
+	parent.children[rune(splitIndex)+rune(parent.startIndex)] = new_internal
 
 	new_internal.children[rune(parent.endIndex)-rune(splitIndex)] = child
-	new_internal.children[mismatch] = &new_leaf
+	new_internal.children[mismatch] = new_leaf
 
 	parent.endIndex = splitIndex
 	child.startIndex = splitIndex
