@@ -16,40 +16,41 @@ type Node struct {
 }
 
 // should take root as first parameter, string to search for as second param.
-func search(v *Node, y string) (*Node, *Node, int) {
-	l := 0
+func search(v *Node, y string) (*Node, *Node, int, int) {
+	i := 0
 	parent := v
 
 	fmt.Println()
-	for l < len(y) {
+	for i < len(y) {
 		fmt.Println(parent)
-		fmt.Println(l)
+		fmt.Println(i)
 
-		child := parent.Children[rune(y[l])]
+		child := parent.Children[rune(y[i])]
 
 		//case where we ended in a node and now have a mismatch
 		if child == nil {
-			return parent, child, edgeLength(parent)
+			return parent, child, i, edgeLength(parent)
 		}
 
-		sf_len := suffix(child, y[l:])
+		sf_len := slow_scan(child, y[i:])
 
 		//case where we have a mismatch on some edge, we need both parent and child
 		if sf_len < edgeLength(child) {
-			return parent, child, sf_len
+			return parent, child, i, sf_len
 		}
+
 		fmt.Println(sf_len, edgeLength(child))
 		parent = child
-		l += sf_len
+		i += sf_len
 	}
 
 	//this case should not be reached
 	fmt.Println("DISASTER")
-	return nil, nil, -1
+	return nil, nil, -1, -1
 }
 
 // return how many chars we match
-func suffix(v *Node, y_part string) int {
+func slow_scan(v *Node, y_part string) int {
 	fmt.Println(y_part, v, x)
 	suffix := x[v.startIndex:v.endIndex]
 
@@ -76,18 +77,18 @@ func buildSuffixTree(x string) *Node {
 	for i := range x {
 		cur := x[i:]
 		fmt.Println(cur, len(x)-i, " kekk")
-		parent, child, val := search(root, cur)
+		parent, child, total, val := search(root, cur)
 		if parent == nil {
 			fmt.Println("oh shit")
 		}
 		if child == nil {
 			fmt.Print("HUHUHUHUHUHUHUHU")
 			fmt.Println(parent)
-			fmt.Println(parent.endIndex, i)
-			newNode(parent.startIndex+i, len(x), parent)
+			fmt.Println(parent.startIndex, i)
+			newNode(total+i, len(x), parent)
 		} else {
 			//case where we end on an edge
-			splitEdge(parent, child, val, i)
+			splitEdge(parent, child, val, total)
 		}
 		BfOrder(root)
 	}
@@ -113,17 +114,17 @@ func newNode(startIndex int, endIndex int, parent *Node) *Node {
 /* creates a new internal node between parent and child.
 it also creates a new node branching (head)*/
 func splitEdge(parent *Node, child *Node, splitIndex int, start_idx int) {
-
-	mismatch := parent.endIndex + splitIndex + start_idx
 	delete(parent.Children, rune(x[child.startIndex]))
 
 	new_internal := newNode(child.startIndex, child.startIndex+splitIndex, parent)
-	newNode(mismatch, len(x), new_internal)
+	newNode(start_idx, len(x), new_internal)
 
 	child.startIndex = child.startIndex + splitIndex
 	new_internal.Children[rune(x[child.startIndex])] = child
 
 }
+
+func findoccurrence(root *Node, y string) { return }
 
 type int_tuple struct {
 	start int
@@ -179,7 +180,8 @@ func main() {
 	x = "baa"
 	x = "aababab"
 	x = "mississippi"
-	x = "banana"
+	x = "abbabbafdsfdshacxzczdsffdsdfsd"
+	x = "abbabaaabbabababxababxababaadsadsasafdsadsadshadbgsadasdbahdsahajhdbashjfbsahjdbashjdsabhdjhasbjshdabashjaaxxbaaabsaxxasxabx"
 	if x[len(x)-1] != '$' {
 		var sb strings.Builder
 		sb.WriteString(x)
