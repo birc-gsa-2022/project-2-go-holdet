@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 )
 
 // global variable storing the string used to build suffix tree
@@ -49,6 +50,7 @@ func search(v *Node, y string) (*Node, *Node, int) {
 
 // return how many chars we match
 func suffix(v *Node, y_part string) int {
+	fmt.Println(y_part, v, x)
 	suffix := x[v.startIndex:v.endIndex]
 
 	for i, char := range []byte(suffix) {
@@ -66,18 +68,23 @@ func suffix(v *Node, y_part string) int {
 	return len(suffix)
 }
 
+/*Builds a tree from some string */
 func buildSuffixTree(x string) *Node {
 	root := newNode(0, 0, nil)
 
+	fmt.Println(x)
 	for i := range x {
 		cur := x[i:]
 		fmt.Println(cur, len(x)-i, " kekk")
 		parent, child, val := search(root, cur)
+		if parent == nil {
+			fmt.Println("oh shit")
+		}
 		if child == nil {
 			fmt.Print("HUHUHUHUHUHUHUHU")
 			fmt.Println(parent)
 			fmt.Println(parent.endIndex, i)
-			newNode(parent.endIndex+i, len(x), parent)
+			newNode(parent.startIndex+i, len(x), parent)
 		} else {
 			//case where we end on an edge
 			splitEdge(parent, child, val, i)
@@ -103,23 +110,18 @@ func newNode(startIndex int, endIndex int, parent *Node) *Node {
 	return &node
 }
 
+/* creates a new internal node between parent and child.
+it also creates a new node branching (head)*/
 func splitEdge(parent *Node, child *Node, splitIndex int, start_idx int) {
+
 	mismatch := parent.endIndex + splitIndex + start_idx
+	delete(parent.Children, rune(x[child.startIndex]))
 
-	//delete current child because we want to squeeze a new node in between parent and child
-	delete(parent.Children, rune(child.startIndex))
-
-	//build new internal node on split, let parent be parent
 	new_internal := newNode(child.startIndex, child.startIndex+splitIndex, parent)
-
-	//build the new edge (head), let parent be new_internal
 	newNode(mismatch, len(x), new_internal)
 
-	//update length of child
 	child.startIndex = child.startIndex + splitIndex
-
-	//add child as a child to new_internal
-	new_internal.Children[rune(child.startIndex)] = child
+	new_internal.Children[rune(x[child.startIndex])] = child
 
 }
 
@@ -173,7 +175,17 @@ func main() {
 		fmt.Fprintf(os.Stderr, "Usage: genome-file reads-file\n")
 		os.Exit(1)
 	}*/
-	x = "aababab$"
+	x = "aaaaaaaaaaaa"
+	x = "baa"
+	x = "aababab"
+	x = "mississippi"
+	x = "banana"
+	if x[len(x)-1] != '$' {
+		var sb strings.Builder
+		sb.WriteString(x)
+		sb.WriteRune('$')
+		x = sb.String()
+	}
 	/*
 		genome := os.Args[1]
 		reads := os.Args[2]
