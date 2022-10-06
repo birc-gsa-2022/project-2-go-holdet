@@ -24,16 +24,12 @@ func search(v *Node, y string) (*Node, *Node, int, int) {
 	parent := v
 
 	for i < len(y) {
-		fmt.Println(i, len(y), "THE NEW IT")
-
 		child := parent.Children[rune(y[i])]
 
 		//case where we ended in a node and now have a mismatch
 		if child == nil {
-			fmt.Println("oh here boi")
 			return parent, child, i, edgeLength(parent)
 		}
-
 		sf_len := slow_scan(child, y[i:])
 
 		//case where we have a mismatch on some edge, we need both parent and child
@@ -42,14 +38,12 @@ func search(v *Node, y string) (*Node, *Node, int, int) {
 			return parent, child, i, sf_len
 		}
 
-		fmt.Println(sf_len, edgeLength(child))
-
-		parent = child
 		//case for when we match on patterns
 		if i == len(y) {
-			fmt.Println(parent, child, "huhhhh")
 			return parent, child, i, sf_len
 		}
+
+		parent = child
 
 	}
 	return nil, nil, -1, -1
@@ -57,7 +51,6 @@ func search(v *Node, y string) (*Node, *Node, int, int) {
 
 // return how many chars we match
 func slow_scan(v *Node, y_part string) int {
-	fmt.Println(y_part, v, x)
 	suffix := x[v.startIndex:v.endIndex]
 
 	for i, char := range []byte(suffix) {
@@ -68,9 +61,6 @@ func slow_scan(v *Node, y_part string) int {
 		if char != y_part[i] {
 			return i
 		}
-		fmt.Println(string(char), string(suffix[i]))
-		fmt.Println(y_part, suffix)
-
 	}
 	return len(suffix)
 }
@@ -84,7 +74,7 @@ func buildSuffixTree(x string) *Node {
 		cur := x[i:]
 		parent, child, total, val := search(root, cur)
 		if parent == nil {
-			fmt.Println("oh no")
+			fmt.Println("this case is not good")
 		}
 		if child == nil {
 			newNode(i+total, len(x), parent)
@@ -114,26 +104,29 @@ func newNode(startIndex int, endIndex int, parent *Node) *Node {
 /* creates a new internal node between parent and child.
 it also creates a new node branching (head)*/
 func splitEdge(parent *Node, child *Node, splitIndex int, start_idx int) {
-	fmt.Println("splitting edge")
 	delete(parent.Children, rune(x[child.startIndex]))
 
 	new_internal := newNode(child.startIndex, child.startIndex+splitIndex, parent)
-	fmt.Println(start_idx+splitIndex, start_idx, splitIndex)
-	s := newNode(start_idx, len(x), new_internal)
+	newNode(start_idx, len(x), new_internal)
 
 	child.startIndex = child.startIndex + splitIndex
 
 	new_internal.Children[rune(x[child.startIndex])] = child
 
-	fmt.Println("split:", parent, child, new_internal, s)
-
 }
 
 func findoccurrences(root *Node, y string) []int_tuple {
-	parent_tree, _, _, _ := search(root, y)
-	fmt.Println(parent_tree, "cringe")
-	return BfOrder(parent_tree)
-
+	parent, child, l, split := search(root, y)
+	if l == len(y) {
+		//if we end in a node
+		if split == 0 {
+			return BfOrder(parent)
+		}
+		//if we end on an edge
+		return BfOrder(child)
+	}
+	//no match
+	return []int_tuple{}
 }
 
 type int_tuple struct {
@@ -170,7 +163,6 @@ func BfOrder(v *Node) []int_tuple {
 	for len(queue) > 0 {
 		//dequeue
 		v = queue.popOrNil()
-		fmt.Println(v, "oka")
 		res := int_tuple{start: v.startIndex, end: v.endIndex}
 
 		//we only want to leaves as results
@@ -196,7 +188,7 @@ func main() {
 	x = "abbabbafdsfdshacxzczdsffdsdfsd"
 	x = "abbabaaabbabababxababxababaadsadsasafdsadsadshadbgsadasdbahdsahajhdbashjfbsahjdbashjdsabhdjhasbjshdabashjaaxxbaaabsaxxasxabx"
 	x = "mississippi"
-	x = "aaaaaaaaaaaa"
+	x = "mississippisisissspisisiissi"
 	if x[len(x)-1] != '$' {
 		var sb strings.Builder
 		sb.WriteString(x)
@@ -210,8 +202,7 @@ func main() {
 		fmt.Println(shared.Todo(genome, reads))
 	*/
 	s_tree := buildSuffixTree(x)
-	fmt.Println("lets go")
-	matches := findoccurrences(s_tree, "a")
+	matches := findoccurrences(s_tree, "iss")
 
 	fmt.Println(matches)
 }
