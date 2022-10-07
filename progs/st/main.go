@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -10,6 +11,7 @@ var x string
 
 // tree structure
 type Node struct {
+	Label      int
 	Children   map[rune]*Node
 	startIndex int
 	endIndex   int
@@ -67,7 +69,7 @@ func slow_scan(v *Node, y_part string) int {
 
 /*Builds a tree from some string */
 func buildSuffixTree(x string) *Node {
-	root := newNode(0, 0, nil)
+	root := newNode(0, 0, nil, 0)
 
 	fmt.Println(x)
 	for i := range x {
@@ -77,10 +79,10 @@ func buildSuffixTree(x string) *Node {
 			fmt.Println("this case is not good")
 		}
 		if child == nil {
-			newNode(i+total, len(x), parent)
+			newNode(i+total, len(x), parent, i)
 		} else {
 			//case where we end on an edge
-			splitEdge(parent, child, val, i+total)
+			splitEdge(parent, child, val, i+total, i)
 		}
 		BfOrder(root)
 	}
@@ -91,9 +93,8 @@ func edgeLength(node *Node) int {
 	return node.endIndex - node.startIndex
 }
 
-func newNode(startIndex int, endIndex int, parent *Node) *Node {
-	node := Node{startIndex: startIndex, endIndex: endIndex}
-	node.Children = make(map[rune]*Node)
+func newNode(startIndex int, endIndex int, parent *Node, label int) *Node {
+	node := Node{startIndex: startIndex, endIndex: endIndex, Children: make(map[rune]*Node), Label: label}
 	//root does not have a parent
 	if parent != nil {
 		parent.Children[rune(x[startIndex])] = &node
@@ -103,11 +104,11 @@ func newNode(startIndex int, endIndex int, parent *Node) *Node {
 
 /* creates a new internal node between parent and child.
 it also creates a new node branching (head)*/
-func splitEdge(parent *Node, child *Node, splitIndex int, start_idx int) {
+func splitEdge(parent *Node, child *Node, splitIndex int, start_idx int, label int) {
 	delete(parent.Children, rune(x[child.startIndex]))
 
-	new_internal := newNode(child.startIndex, child.startIndex+splitIndex, parent)
-	newNode(start_idx, len(x), new_internal)
+	new_internal := newNode(child.startIndex, child.startIndex+splitIndex, parent, parent.Label)
+	newNode(start_idx, len(x), new_internal, label)
 
 	child.startIndex = child.startIndex + splitIndex
 
@@ -115,7 +116,10 @@ func splitEdge(parent *Node, child *Node, splitIndex int, start_idx int) {
 
 }
 
-func findoccurrences(root *Node, y string) []int_tuple {
+func findoccurrences(root *Node, y string) []int {
+	sugon := BfOrder(root)
+	sort.Ints(sugon)
+	fmt.Println(sugon)
 	parent, child, l, split := search(root, y)
 	if l == len(y) {
 		//if we end in a node
@@ -126,12 +130,7 @@ func findoccurrences(root *Node, y string) []int_tuple {
 		return BfOrder(child)
 	}
 	//no match
-	return []int_tuple{}
-}
-
-type int_tuple struct {
-	start int
-	end   int
+	return []int{}
 }
 
 //some wrapper for queue inspired from TA feedback
@@ -151,9 +150,9 @@ func (t *TreeQueue) popOrNil() *Node {
 
 // Do a breadth-order traversal of v and output the
 // values in the tree.
-func BfOrder(v *Node) []int_tuple {
+func BfOrder(v *Node) []int {
 	queue := make(TreeQueue, 0)
-	result := []int_tuple{}
+	result := make([]int, 0)
 
 	if v == nil {
 		return result
@@ -163,11 +162,9 @@ func BfOrder(v *Node) []int_tuple {
 	for len(queue) > 0 {
 		//dequeue
 		v = queue.popOrNil()
-		res := int_tuple{start: v.startIndex, end: v.endIndex}
-
 		//we only want to leaves as results
 		if len(v.Children) == 0 {
-			result = append(result, res)
+			result = append(result, v.Label)
 		} else {
 			for _, child := range v.Children {
 				queue.push(child)
@@ -189,6 +186,7 @@ func main() {
 	x = "abbabaaabbabababxababxababaadsadsasafdsadsadshadbgsadasdbahdsahajhdbashjfbsahjdbashjdsabhdjhasbjshdabashjaaxxbaaabsaxxasxabx"
 	x = "mississippi"
 	x = "mississippisisissspisisiissi"
+	x = "koooooogogooog"
 	if x[len(x)-1] != '$' {
 		var sb strings.Builder
 		sb.WriteString(x)
@@ -202,7 +200,7 @@ func main() {
 		fmt.Println(shared.Todo(genome, reads))
 	*/
 	s_tree := buildSuffixTree(x)
-	matches := findoccurrences(s_tree, "iss")
+	matches := findoccurrences(s_tree, "oo")
 
 	fmt.Println(matches)
 }
