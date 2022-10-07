@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
-	"sort"
+	"os"
 	"strings"
+
+	"birc.au.dk/gsa/shared"
 )
 
 // global variable storing the string used to build suffix tree
@@ -71,7 +73,6 @@ func slow_scan(v *Node, y_part string) int {
 func buildSuffixTree(x string) *Node {
 	root := newNode(0, 0, nil, 0)
 
-	fmt.Println(x)
 	for i := range x {
 		cur := x[i:]
 		parent, child, total, val := search(root, cur)
@@ -117,9 +118,6 @@ func splitEdge(parent *Node, child *Node, splitIndex int, start_idx int, label i
 }
 
 func findoccurrences(root *Node, y string) []int {
-	sugon := BfOrder(root)
-	sort.Ints(sugon)
-	fmt.Println(sugon)
 	parent, child, l, split := search(root, y)
 	if l == len(y) {
 		//if we end in a node
@@ -175,32 +173,28 @@ func BfOrder(v *Node) []int {
 }
 
 func main() {
-	/*if len(os.Args) != 3 {
+	if len(os.Args) != 3 {
 		fmt.Fprintf(os.Stderr, "Usage: genome-file reads-file\n")
 		os.Exit(1)
-	}*/
-	x = "aaaaaaaaaaaa"
-	x = "baa"
-	x = "aababab"
-	x = "abbabbafdsfdshacxzczdsffdsdfsd"
-	x = "abbabaaabbabababxababxababaadsadsasafdsadsadshadbgsadasdbahdsahajhdbashjfbsahjdbashjdsabhdjhasbjshdabashjaaxxbaaabsaxxasxabx"
-	x = "mississippi"
-	x = "mississippisisissspisisiissi"
-	x = "koooooogogooog"
-	if x[len(x)-1] != '$' {
-		var sb strings.Builder
-		sb.WriteString(x)
-		sb.WriteRune('$')
-		x = sb.String()
 	}
-	/*
-		genome := os.Args[1]
-		reads := os.Args[2]
+	genomes := shared.GeneralParser(os.Args[1], shared.Fasta)
+	reads := shared.GeneralParser(os.Args[2], shared.Fastq)
 
-		fmt.Println(shared.Todo(genome, reads))
-	*/
-	s_tree := buildSuffixTree(x)
-	matches := findoccurrences(s_tree, "oo")
+	for _, gen := range genomes {
+		s := gen.Rec
+		if s[len(s)-1] != '$' {
+			var sb strings.Builder
+			sb.WriteString(s)
+			sb.WriteRune('$')
+			x = sb.String()
+		}
+		suffixTree := buildSuffixTree(s)
+		for _, read := range reads {
+			matches := findoccurrences(suffixTree, read.Rec)
+			for _, match := range matches {
+				shared.Sam(read.Name, gen.Name, match, read.Rec)
+			}
+		}
+	}
 
-	fmt.Println(matches)
 }
