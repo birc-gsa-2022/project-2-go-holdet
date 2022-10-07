@@ -29,7 +29,6 @@ func search(v *Node, y string) (*Node, *Node, int, int) {
 
 	for i < len(y) {
 		child := parent.Children[rune(y[i])]
-
 		//case where we ended in a node and now have a mismatch
 		if child == nil {
 			return parent, child, i, edgeLength(parent)
@@ -70,8 +69,9 @@ func slow_scan(v *Node, y_part string) int {
 }
 
 /*Builds a tree from some string */
-func buildSuffixTree(x string) *Node {
+func buildSuffixTree(str string) *Node {
 	root := newNode(0, 0, nil, 0)
+	x = str
 
 	for i := range x {
 		cur := x[i:]
