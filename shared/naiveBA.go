@@ -2,11 +2,8 @@ package shared
 
 import "strings"
 
-func Handin1_ba(genome string, reads string) string {
+func Handin1_ba(parsedGenomes []Recs, parsedReads []Recs) string {
 	var rb strings.Builder
-	parsedGenomes := GeneralParser(genome, Fasta)
-
-	parsedReads := GeneralParser(reads, Fastq)
 
 	for _, read := range parsedReads {
 		for _, gen := range parsedGenomes {
