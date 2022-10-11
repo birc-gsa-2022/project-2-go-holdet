@@ -108,7 +108,7 @@ func TestMakeDataFixN(t *testing.T) {
 	time_Naive := 0
 	time_Naive_worst := 0
 
-	for i := 1; i < 15; i++ {
+	for i := 1; i < 2; i++ {
 
 		num_of_n *= 2
 		num_of_m := 1
@@ -183,7 +183,7 @@ func TestMakeDataSearchtime(t *testing.T) {
 	time_Naive8 := 0
 	num_of_m := 1
 
-	for i := 1; i < 15; i++ {
+	for i := 1; i < 2; i++ {
 		fmt.Println(num_of_n, num_of_m)
 		num_of_n *= 2
 		num_of_m *= 2
