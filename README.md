@@ -39,9 +39,14 @@ It was not too
 ## Correctness
 
 In order to verify the correctness of our suffix tree implementation we verified with our naive border array algorithm from the previous project.
-We tested our implementation on some selected input (files genome.fa, ![](./progs/st/testdata/reads.fq) random data generated from different size alphabets. We compared our reads on the suffix tree with the reads from naive border-array.
+We tested our implementation on some selected input (files ![](./progs/st/testdata/genome.fa), ![](./progs/st/testdata/reads.fq) ) as well as random data generated from different size alphabets (A, AB, ACGT, English). Sam files generated from the suffix tree are not recieved in a specified order, which meant that the two Sam files first were sorted before we could compare that the files were identical. The tests can be found in the ![](./progs/st/main_test.go) file.
 
 ## Running time
+
+Our implementation of the build suffix tree operation runs in O(n²) time.
+We have conducted an exeriment that shows this. The worst case behaivour can be found by using the alphabet A*, since we guarantee maximal comparisons per inserted suffix - we always have to compare the entire suffix we insert.
+
+
 
 *Describe experiments that verifies that your implementation of `st` uses no more time than O(n) or O(n²) (depending on the algorithm) for constructing the suffix tree and no more than O(m) for searching for a given read in it. Remember to explain your choice of test data. What are “best” and “worst” case inputs?*
 
