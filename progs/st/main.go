@@ -186,7 +186,7 @@ func main() {
 			var sb strings.Builder
 			sb.WriteString(s)
 			sb.WriteRune('$')
-			x = sb.String()
+			s = sb.String()
 		}
 		suffixTree := buildSuffixTree(s)
 		for _, read := range reads {
