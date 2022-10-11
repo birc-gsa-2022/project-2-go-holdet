@@ -104,19 +104,19 @@ func TestMakeDataFixN(t *testing.T) {
 	csvwriter := csv.NewWriter(csvFile)
 	_ = csvwriter.Write([]string{"x_size", "naive", "naive_worst"})
 
-	num_of_n := 8
+	num_of_n := 0
 	time_Naive := 0
 	time_Naive_worst := 0
 
 	for i := 1; i < 2; i++ {
 
-		num_of_n *= 2
+		num_of_n += 1000
 		num_of_m := 1
 		genome, _ := shared.BuildSomeFastaAndFastq(num_of_n, num_of_m, 1, shared.English, 78)
 		parsedGenomes := shared.GeneralParserStub(genome, shared.Fasta, num_of_n*num_of_m+1)
 		//parsedReads := shared.GeneralParserStub(reads, shared.Fastq, num_of_n*num_of_m+1)
 
-		for i := 0; i < 6; i++ {
+		for i := 0; i < 5; i++ {
 			for _, gen := range parsedGenomes {
 				s := gen.Rec
 				if s[len(s)-1] != '$' {
@@ -178,15 +178,15 @@ func TestMakeDataSearchtime(t *testing.T) {
 	csvwriter := csv.NewWriter(csvFile)
 	_ = csvwriter.Write([]string{"x_size", "naive4", "naive8"})
 
-	num_of_n := 4
+	num_of_n := 0
 	time_Naive4 := 0
 	time_Naive8 := 0
-	num_of_m := 1
+	num_of_m := 0
 
 	for i := 1; i < 2; i++ {
 		fmt.Println(num_of_n, num_of_m)
-		num_of_n *= 2
-		num_of_m *= 2
+		num_of_n += 500
+		num_of_m += 50
 		genome, reads := shared.BuildSomeFastaAndFastq(num_of_n, num_of_m, 1, shared.A, 78)
 		parsedGenomes := shared.GeneralParserStub(genome, shared.Fasta, num_of_n*num_of_m+1)
 		parsedReads := shared.GeneralParserStub(reads, shared.Fastq, num_of_n*num_of_m+1)
@@ -195,7 +195,7 @@ func TestMakeDataSearchtime(t *testing.T) {
 		parsedGenomes2 := shared.GeneralParserStub(genome2, shared.Fasta, num_of_n*num_of_m+1)
 		parsedReads2 := shared.GeneralParserStub(reads2, shared.Fastq, num_of_n*num_of_m+1)
 
-		for i := 0; i < 10; i++ {
+		for i := 0; i < 5; i++ {
 			for _, gen := range parsedGenomes {
 				s := gen.Rec
 				if s[len(s)-1] != '$' {

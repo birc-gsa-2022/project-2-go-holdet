@@ -44,11 +44,8 @@ We tested our implementation on some selected input (files ![](./progs/st/testda
 ## Running time
 
 Our implementation of the build suffix tree operation runs in O(n²) time.
-We have conducted an exeriment that shows this. The worst case behaivour can be found by using the alphabet A*, since we guarantee maximal comparisons per inserted suffix - we always have to compare the entire suffix we insert.
+We have conducted an exeriment that shows this. The worst case behaivour can be found by using the alphabet A*, since we guarantee maximal comparisons per inserted suffix - we always have to compare the entire suffix we insert. This is plotted ![](figs/time_build.png) Note that the running time on the y-axis is divided by the pattern length in order to get a linear correlation. For reference we also plotted build over pseudorandom strings on the english alphabet, which obviously runs faster due to less chance of having to compare the entire suffix being inserted. The best case would obviously be to have each suffix branch in the root taking ~o(n) time. This is obviously not very feasible in practise for long strings.
 
+The search for pattern operation runs in O(m+z). m being the length of the pattern we are searching for and z being the amount of excact matches. In order to show this we plotted the time it took to search for two different amount of matches. ![](figs/time_search.png). The best-case for this operation would obviously be when z=0, so no matches and having short m's. The worst case are the ones where every part of n is matching with m, so z high, m long or both.
 
-
-*Describe experiments that verifies that your implementation of `st` uses no more time than O(n) or O(n²) (depending on the algorithm) for constructing the suffix tree and no more than O(m) for searching for a given read in it. Remember to explain your choice of test data. What are “best” and “worst” case inputs?*
-
-*If you have graphs that show the running time--you probably should have--you can embed them here like we did in the previous project.*
-
+We can see that it behaves as expected since it runs linearly on different m values and the difference in z appears as some constant offset.
