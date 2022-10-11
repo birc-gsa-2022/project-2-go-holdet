@@ -21,13 +21,25 @@ Implement the tool `st` that does exact pattern matching using a suffix tree. Te
 
 ## Specify if you have used a linear time or quadratic time algorithm.
 
+We did not implement McCreight's Algorithm. We only had time to implement the quadratic time algorithm.
+
+
 ## Insights you may have had while implementing and comparing the algorithms.
+
+We saw that the Search function could be implemented in a way where it could be used both for building the suffix tree and for searching for patterns later on.
+
+It was also interesting to to implement our own data structure and see how this structure did computations notably slower than the algorithms in the previous assignment (Even when having the same time complexity)
+
 
 ## Problems encountered if any.
 
+We had a some problems with getting the algorithm to work in the beginning. The issues primarily snug into the code when building the suffix tree and when we inserted nodes or splitted edges and had to add and change pointers, which we did wrong for some time. 
+It was not too
+
 ## Correctness
 
-*Describe experiments that verifies the correctness of your implementations.*
+In order to verify the correctness of our suffix tree implementation we verified with our naive border array algorithm from the previous project.
+We tested our implementation on some selected input (files genome.fa, ![](./progs/st/testdata/reads.fq) random data generated from different size alphabets. We compared our reads on the suffix tree with the reads from naive border-array.
 
 ## Running time
 
